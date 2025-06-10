@@ -6,100 +6,9 @@ import os
 
 st.set_page_config(
     page_title="Chatbot DEMO",
-    page_icon="https://stock.adobe.com/th/images/home-property-logo/319158029",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    page_icon="https://www.freeiconspng.com/uploads/apartment-icon-7.gif",
+    layout="centered"
 )
-
-st.markdown("""
-<style>
-    .main {
-        padding-top: 2rem;
-    }
-    
-    .stApp {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    
-    .chat-message {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .user-message {
-        background-color: #f0f2f6;
-        margin-left: 2rem;
-    }
-    
-    .assistant-message {
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        margin-right: 2rem;
-    }
-    
-    .message-header {
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        color: #1f1f1f;
-    }
-    
-    .message-content {
-        line-height: 1.6;
-        color: #2d2d2d;
-    }
-    
-    .header-container {
-        text-align: center;
-        padding: 2rem 0;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 2rem;
-    }
-    
-    .input-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 1rem;
-        border-top: 1px solid #e0e0e0;
-        z-index: 1000;
-    }
-    
-    .chat-container {
-        padding-bottom: 120px;
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-    
-    .sample-questions {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
-    }
-    
-    .sample-question-btn {
-        background-color: #ffffff;
-        border: 1px solid #d0d0d0;
-        border-radius: 0.25rem;
-        padding: 0.5rem 1rem;
-        margin: 0.25rem;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 0.9rem;
-    }
-    
-    .sample-question-btn:hover {
-        background-color: #f0f2f6;
-        border-color: #a0a0a0;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -161,16 +70,16 @@ def get_openai_client():
 client = get_openai_client()
 
 st.markdown("""
-<div class="header-container">
-    <h1>🏠 AI ผู้ช่วยด้านที่อยู่อาศัยและคอนโดมิเนียม</h1>
-    <p style="color: #666; font-size: 1.1rem;">ให้คำปรึกษาและคำแนะนำเกี่ยวกับการอยู่อาศัยในคอนโดมิเนียม</p>
+<div class="header-container" style="text-align: center;">
+    <img src="https://www.freeiconspng.com/uploads/apartment-icon-7.gif" width="250" height="250" style="margin-bottom: 10px;">
+    <h1>Chatbot สำนักงานนิติบุคคล</h1>
+    <p style="color: #666; font-size: 1.1rem;">ให้คำปรึกษาและคำแนะนำเกี่ยวกับการอยู่อาศัยของลูกบ้าน</p>
 </div>
 """, unsafe_allow_html=True)
 
 if len(st.session_state.chat_history) == 0:
     st.markdown("""
     <div class="sample-questions">
-        <h3>💡 คำถามยอดนิยม</h3>
         <p>คลิกเพื่อเริ่มต้นการสนทนา:</p>
     </div>
     """, unsafe_allow_html=True)
@@ -180,7 +89,8 @@ if len(st.session_state.chat_history) == 0:
         "ค่าส่วนกลางแพงเกินไป มีสิทธิ์ร้องเรียนไหม?",
         "อยากปรับปรุงห้อง ต้องขออนุญาตใครบ้าง?",
         "ปัญหาการจอดรถในคอนโด",
-        "เพื่อนบ้านเลี้ยงสัตว์ผิดกฎ ควรแจ้งใคร?"
+        "เพื่อนบ้านเลี้ยงสัตว์ผิดกฎ ควรแจ้งใคร?",
+        "ติดต่อรับพัสดุที่สำนักงานนิติบุคคล",
     ]
     
     cols = st.columns(2)
@@ -235,13 +145,26 @@ with chat_container:
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
+st.markdown("""
+<style>
+.stButton > button {
+    height: 2.5rem;
+    width: 100%;
+}
+.stTextInput > div > div > input {
+    height: 2.5rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
 col1, col2 = st.columns([5, 1])
 
 with col1:
     user_input = st.text_input(
         "พิมพ์คำถามของคุณ...",
-        placeholder="เช่น เพื่อนบ้านเปิดเพลงดัง ควรจะทำยังไงดี?",
-        key="user_input"
+        placeholder="พิมพ์คำถามของคุณ...",
+        key="user_input",
+        label_visibility="collapsed"
     )
 
 with col2:
@@ -316,6 +239,6 @@ with st.sidebar:
 st.markdown("""
 ---
 <div style="text-align: center; color: #666; font-size: 0.9rem; padding: 1rem;">
-    💡 AI ให้คำแนะนำทั่วไป สำหรับปัญหาซับซ้อนควรปรึกษาผู้เชี่ยวชาญ
+    💡 AI ให้คำแนะนำทั่วไป สำหรับปัญหาหรือรายละเอียดที่สำคัญติดต่อที่สำนักงานนิติบุคคล<br>
 </div>
 """, unsafe_allow_html=True)
