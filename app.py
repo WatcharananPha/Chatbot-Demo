@@ -3,6 +3,7 @@ from openai import OpenAI
 import json
 from datetime import datetime
 import os
+import time
 
 st.set_page_config(
     page_title="Chatbot DEMO",
@@ -70,6 +71,80 @@ def get_openai_client():
 client = get_openai_client()
 
 st.markdown("""
+<style>
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    margin: 5px 0;
+}
+
+.user-message {
+    align-self: flex-end;
+    background-color: #f0f2f5;
+    color: #000;
+}
+
+.assistant-message {
+    align-self: flex-start;
+    background-color: #f0f2f5;
+    color: #000;
+}
+
+.message-content {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #673ab7;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+.assistant-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e50695;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.message-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.sample-questions button {
+    margin-bottom: 8px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
 <div class="header-container" style="text-align: center;">
     <img src="https://www.freeiconspng.com/uploads/apartment-icon-7.gif" width="250" height="250" style="margin-bottom: 10px;">
     <h1>Chatbot สำนักงานนิติบุคคล</h1>
@@ -105,44 +180,46 @@ if len(st.session_state.chat_history) == 0:
                 
                 st.session_state.messages.append({"role": "user", "content": question})
             
-                with st.spinner("กำลังคิด..."):
-                    response = client.chat.completions.create(
-                        model="typhoon-v2-70b-instruct",
-                        messages=st.session_state.messages
-                    )
-                    
-                    assistant_response = response.choices[0].message.content
-                    
-                    st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-                    st.session_state.chat_history.append({
-                        "role": "assistant",
-                        "content": assistant_response,
-                        "timestamp": datetime.now().isoformat()
-                    })
-                    
-                    st.rerun()
+                # Removed spinner - process directly
+                response = client.chat.completions.create(
+                    model="typhoon-v2-70b-instruct",
+                    messages=st.session_state.messages
+                )
+                
+                assistant_response = response.choices[0].message.content
+                
+                st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+                st.session_state.chat_history.append({
+                    "role": "assistant",
+                    "content": assistant_response,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+                st.rerun()
 
 chat_container = st.container()
 with chat_container:
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f"""
-            <div class="chat-message user-message">
-                <div class="message-header">👤 คุณ</div>
-                <div class="message-content">{message["content"]}</div>
+            <div class="message-row">
+                <div style="flex-grow: 1;"></div>
+                <div class="chat-message user-message">
+                    {message["content"]}
+                </div>
+                <div class="user-avatar">KA</div>
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
-            <div class="chat-message assistant-message">
-                <div class="message-header">🏠 AI ผู้ช่วย</div>
-                <div class="message-content">{message["content"]}</div>
+            <div class="message-row">
+                <div class="assistant-avatar">AI</div>
+                <div class="chat-message assistant-message">
+                    {message["content"]}
+                </div>
+                <div style="flex-grow: 1;"></div>
             </div>
             """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
 st.markdown("""
@@ -178,23 +255,40 @@ if (send_button and user_input) or (user_input and st.session_state.get("enter_p
     })
     
     st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.spinner("กำลังคิด..."):
-        response = client.chat.completions.create(
-            model="typhoon-v2-70b-instruct",
-            messages=st.session_state.messages
-        )
-        
-        assistant_response = response.choices[0].message.content
-        
-        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-        st.session_state.chat_history.append({
-            "role": "assistant",
-            "content": assistant_response,
-            "timestamp": datetime.now().isoformat()
-        })
-        
-        st.session_state.user_input = ""
-        st.rerun()
+    
+    # Removed spinner - process directly
+    response = client.chat.completions.create(
+        model="typhoon-v2-70b-instruct",
+        messages=st.session_state.messages
+    )
+    
+    assistant_response = response.choices[0].message.content
+    
+    # Create a placeholder for the typewriter effect
+    message_placeholder = st.empty()
+    
+    # Typewriter effect
+    for i in range(len(assistant_response)):
+        message_placeholder.markdown(f"""
+        <div class="message-row">
+            <div class="assistant-avatar">AI</div>
+            <div class="chat-message assistant-message">
+                {assistant_response[:i+1]}
+            </div>
+            <div style="flex-grow: 1;"></div>
+        </div>
+        """, unsafe_allow_html=True)
+        time.sleep(0.02)
+    
+    st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+    st.session_state.chat_history.append({
+        "role": "assistant",
+        "content": assistant_response,
+        "timestamp": datetime.now().isoformat()
+    })
+    
+    st.session_state.user_input = ""
+    st.rerun()
 
 with st.sidebar:
     st.header("⚙️ ตัวเลือก")
