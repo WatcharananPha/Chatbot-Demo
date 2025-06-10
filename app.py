@@ -5,8 +5,8 @@ from datetime import datetime
 import os
 
 st.set_page_config(
-    page_title="AI ผู้ช่วยด้านที่อยู่อาศัยและคอนโดมิเนียม",
-    page_icon="🏠",
+    page_title="Chatbot DEMO",
+    page_icon="https://stock.adobe.com/th/images/home-property-logo/319158029",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -196,25 +196,21 @@ if len(st.session_state.chat_history) == 0:
                 st.session_state.messages.append({"role": "user", "content": question})
             
                 with st.spinner("กำลังคิด..."):
-                    try:
-                        response = client.chat.completions.create(
-                            model="typhoon-v2-70b-instruct",
-                            messages=st.session_state.messages
-                        )
-                        
-                        assistant_response = response.choices[0].message.content
-                        
-                        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-                        st.session_state.chat_history.append({
-                            "role": "assistant",
-                            "content": assistant_response,
-                            "timestamp": datetime.now().isoformat()
-                        })
-                        
-                        st.rerun()
-                        
-                    except Exception as e:
-                        st.error(f"เกิดข้อผิดพลาด: {str(e)}")
+                    response = client.chat.completions.create(
+                        model="typhoon-v2-70b-instruct",
+                        messages=st.session_state.messages
+                    )
+                    
+                    assistant_response = response.choices[0].message.content
+                    
+                    st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": assistant_response,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                    
+                    st.rerun()
 
 chat_container = st.container()
 with chat_container:
@@ -260,26 +256,23 @@ if (send_button and user_input) or (user_input and st.session_state.get("enter_p
     
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.spinner("กำลังคิด..."):
-        try:
-            response = client.chat.completions.create(
-                model="typhoon-v2-70b-instruct",
-                messages=st.session_state.messages
-            )
-            
-            assistant_response = response.choices[0].message.content
-            
-            st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": assistant_response,
-                "timestamp": datetime.now().isoformat()
-            })
-            
-            st.session_state.user_input = ""
-            st.rerun()
-            
-        except Exception as e:
-            st.error(f"เกิดข้อผิดพลาด: {str(e)}")
+        response = client.chat.completions.create(
+            model="typhoon-v2-70b-instruct",
+            messages=st.session_state.messages
+        )
+        
+        assistant_response = response.choices[0].message.content
+        
+        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+        st.session_state.chat_history.append({
+            "role": "assistant",
+            "content": assistant_response,
+            "timestamp": datetime.now().isoformat()
+        })
+        
+        st.session_state.user_input = ""
+        st.rerun()
+
 with st.sidebar:
     st.header("⚙️ ตัวเลือก")
     
